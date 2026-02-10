@@ -1,0 +1,155 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+          <h2 class="mb-0">Book an Appointment</h2>
+        </div>
+        <div class="card-body">
+          <form id="booking-form">
+            <div class="mb-3">
+              <label for="doctor_id" class="form-label">Doctor:</label>
+              <select name="doctor_id" id="doctor_id" class="form-select" required>
+                <option value="">Select Doctor</option>
+                <% @doctors.each do |doctor| %>
+                  <option value="<%= doctor.id %>"><%= doctor.name %></option>
+                <% end %>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="patient_id" class="form-label">Patient:</label>
+              <select name="patient_id" id="patient_id" class="form-select" required>
+                <option value="">Select Patient</option>
+                <% @patients.each do |patient| %>
+                  <option value="<%= patient.id %>"><%= patient.name %></option>
+                <% end %>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="start_at" class="form-label">Start Time:</label>
+              <input type="datetime-local" name="start_at" id="start_at" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+              <label for="end_at" class="form-label">End Time:</label>
+              <input type="datetime-local" name="end_at" id="end_at" class="form-control" required>
+            </div>
+
+            <div class="d-grid">
+              <button type="submit" id="submit-btn" class="btn btn-primary btn-lg">Book Appointment</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      
+    </div>
+
+    <div class="col-md-6">
+      <div class="card shadow">
+        <div class="card-header bg-secondary text-white">
+          <h2 class="mb-0">Existing Appointments</h2>
+        </div>
+        <div class="card-body" style="max-height: 600px; overflow-y: auto;">
+          <% if @appointments.empty? %>
+            <p class="text-center text-muted my-3">No appointments found.</p>
+          <% else %>
+            <% @appointments.each do |appt| %>
+              <div class="card mb-3 border-secondary">
+                <div class="card-body">
+                  <h5 class="card-title text-primary"><%= appt.doctor.name %></h5>
+                  <div class="mb-2">
+                    <span class="badge bg-info text-dark"><%= appt.status.humanize %></span>
+                  </div>
+                  <p class="card-text mb-0">
+                    <strong>Patient:</strong> <%= appt.patient.name %><br>
+                    <strong>Start:</strong> <%= format_datetime(appt.start_at) %><br>
+                    <strong>End:</strong> <%= format_datetime(appt.end_at) %>
+                  </p>
+                </div>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('booking-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const submitBtn = document.getElementById('submit-btn');
+    if (submitBtn.disabled) return;
+    
+    // Disable button to prevent double submission
+    submitBtn.disabled = true;
+    const originalBtnText = submitBtn.innerText;
+    submitBtn.innerText = 'Booking...';
+
+    const doctorId = document.getElementById('doctor_id').value;
+    const patientId = document.getElementById('patient_id').value;
+    const startAtStr = document.getElementById('start_at').value;
+    const endAtStr = document.getElementById('end_at').value;
+    
+    if (!doctorId || !patientId || !startAtStr || !endAtStr) {
+      alert('Please fill in all fields');
+      submitBtn.disabled = false;
+      submitBtn.innerText = originalBtnText;
+      return;
+    }
+
+    const startAt = new Date(startAtStr);
+    const endAt = new Date(endAtStr);
+
+    if (endAt <= startAt) {
+      alert('End time must be after start time');
+      submitBtn.disabled = false;
+      submitBtn.innerText = originalBtnText;
+      return;
+    }
+
+    const payload = {
+      appointment: {
+        doctor_id: doctorId,
+        patient_id: patientId,
+        start_at: startAt.toISOString(),
+        end_at: endAt.toISOString()
+      }
+    };
+
+    fetch('/api/v1/appointments', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+      },
+      body: JSON.stringify(payload)
+    })
+    .then(async response => {
+      const data = await response.json();
+      if (response.ok) {
+        alert('Appointment booked successfully!');
+        window.location.reload();
+      } else {
+        let errorMsg = (data.details ? data.details.join(', ') : null);
+        errorMsg = errorMsg || data.error;
+        if (data.message) {
+             alert('Error: ' + errorMsg + '\n' + data.message);
+        } else {
+             alert('Error: ' + errorMsg);
+        }
+        submitBtn.disabled = false;
+        submitBtn.innerText = originalBtnText;
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('An unexpected error occurred.');
+      submitBtn.disabled = false;
+      submitBtn.innerText = originalBtnText;
+    });
+  });
+</script>

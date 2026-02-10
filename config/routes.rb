@@ -5,4 +5,6 @@ Rails.application.routes.draw do
       resources :appointments, only: [ :create ]
     end
   end
+
+  get '/booking', to: 'bookings#index'
 end
