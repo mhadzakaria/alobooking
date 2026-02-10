@@ -28,7 +28,7 @@ class CreateBookingCoreTables < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :doctor_schedules, [:doctor_id, :day_of_week]
+    add_index :doctor_schedules, [ :doctor_id, :day_of_week ]
 
 
     # =========================
@@ -50,7 +50,7 @@ class CreateBookingCoreTables < ActiveRecord::Migration[8.0]
 
     # Prevent double submission
     add_index :appointments,
-              [:doctor_id, :patient_id, :start_at],
+              [ :doctor_id, :patient_id, :start_at ],
               unique: true,
               where: "status != 'cancelled'",
               name: "index_appointments_no_duplicate_booking"

@@ -7,7 +7,7 @@ module Api
       rescue_from ActiveRecord::RecordNotUnique, with: :render_double_booking_error
       rescue_from PG::ExclusionViolation, with: :render_overlap_error
 
-      def create        
+      def create
         start_time = Time.parse(appointment_params[:start_at]) rescue nil
         end_time = Time.parse(appointment_params[:end_at]) rescue nil
         if !start_time || !end_time
@@ -22,9 +22,9 @@ module Api
         )
 
         if @appointment.save
-          render json: { 
+          render json: {
             message: "Appointment booked successfully",
-            data: @appointment 
+            data: @appointment
           }, status: :created
         else
           render_validation_error(@appointment)
@@ -39,24 +39,24 @@ module Api
 
       def render_validation_error(exeception_or_record)
         record = exeception_or_record.is_a?(ActiveRecord::RecordInvalid) ? exeception_or_record.record : exeception_or_record
-        render json: { 
-          error: "Validation failed", 
-          details: record&.errors&.full_messages 
+        render json: {
+          error: "Validation failed",
+          details: record&.errors&.full_messages
         }, status: :unprocessable_entity
       end
 
       def render_double_booking_error(exception)
-        render json: { 
-          error: "Double booking detected", 
-          message: "You have already booked an appointment with this doctor at this time." 
+        render json: {
+          error: "Double booking detected",
+          message: "You have already booked an appointment with this doctor at this time."
         }, status: :conflict
       end
 
       def render_overlap_error(exception)
-        render json: { 
-          error: "Time slot unavailable", 
-          message: "The doctor has another appointment overlapping with this time." 
-        }, status: :conflict  
+        render json: {
+          error: "Time slot unavailable",
+          message: "The doctor has another appointment overlapping with this time."
+        }, status: :conflict
       end
     end
   end

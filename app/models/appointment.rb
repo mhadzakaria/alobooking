@@ -10,15 +10,15 @@ class Appointment < ApplicationRecord
   validate :within_doctor_schedule
 
   enum :status, {
-    upcoming: 'upcoming',
-    confirmed: 'confirmed',
-    completed: 'completed',
-    cancelled: 'cancelled',
-    not_show: 'not_show'
-  }, default: 'upcoming'
+    upcoming: "upcoming",
+    confirmed: "confirmed",
+    completed: "completed",
+    cancelled: "cancelled",
+    not_show: "not_show"
+  }, default: "upcoming"
 
   # Scopes
-  scope :upcoming_appointments, -> { upcoming.where('start_at > ?', Time.current) }
+  scope :upcoming_appointments, -> { upcoming.where("start_at > ?", Time.current) }
 
   def must_be_future
     errors.add(:start_at, "must be in the future") if start_at.present? && start_at < Time.current
@@ -30,7 +30,7 @@ class Appointment < ApplicationRecord
 
     dow = start_at.wday
     schedule = doctor.doctor_schedules.find_by(day_of_week: dow, active: true)
-    
+
     unless schedule
       errors.add(:base, "Doctor is not available on this day")
       return

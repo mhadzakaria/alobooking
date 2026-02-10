@@ -4,7 +4,7 @@ class DoctorSchedule < ApplicationRecord
   validates :day_of_week, presence: true, inclusion: { in: 0..6 }
   validates :start_time, presence: true
   validates :end_time, presence: true
-  
+
   validate :end_time_after_start_time
 
   private

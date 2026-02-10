@@ -14,7 +14,7 @@ dr_who = Doctor.create!(name: "Dr. Who")
 end
 
 # Schedule: Mon, Wed, Fri 10:00 - 14:00
-[1, 3, 5].each do |day|
+[ 1, 3, 5 ].each do |day|
   DoctorSchedule.create!(
     doctor: dr_who,
     day_of_week: day,
