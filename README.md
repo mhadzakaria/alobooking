@@ -19,6 +19,7 @@ This is a booking management system.
     ```bash
     bin/rails db:create
     bin/rails db:migrate
+    bin/rails db:seed
     ```
 
 ## Development
@@ -28,7 +29,16 @@ Run the server:
 bin/rails server
 ```
 
-## Takss
+## Endpoints
+
+### UI
+- `GET /booking`: The booking form and list of appointments.
+
+### API
+- `POST /api/v1/appointments`: Create a new appointment.
+  - Body: `{ "appointment": { "doctor_id": ID, "patient_id": ID, "start_at": "ISO8601", "end_at": "ISO8601" } }`
+
+## Tasks
 ### Task B – Data & Performance (Short Answer)
 1. If the appointment data grows to millions of records, how would you handle:<br>
 **ANSWER**:<br>
