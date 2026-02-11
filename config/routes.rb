@@ -6,5 +6,5 @@ Rails.application.routes.draw do
     end
   end
 
-  get '/booking', to: 'bookings#index'
+  get "/booking", to: "bookings#index"
 end
