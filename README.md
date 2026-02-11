@@ -38,6 +38,18 @@ bin/rails server
 - `POST /api/v1/appointments`: Create a new appointment.
   - Body: `{ "appointment": { "doctor_id": ID, "patient_id": ID, "start_at": "ISO8601", "end_at": "ISO8601" } }`
 
+## CURL
+```bash
+curl -i -X POST http://localhost:3000/api/v1/appointments   -H "Content-Type: application/json"   -d '{
+    "appointment": {
+      "doctor_id": 1,
+      "patient_id": 1,
+      "start_at": "2026-02-11T10:00:00+07:00",
+      "end_at": "2026-02-11T11:00:00+07:00"
+    }
+  }'
+```
+
 ## Tasks
 ### Task B – Data & Performance (Short Answer)
 1. If the appointment data grows to millions of records, how would you handle:<br>
